@@ -1,5 +1,5 @@
 package com.example.hmong_translate.ui
-
+// import framework
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
