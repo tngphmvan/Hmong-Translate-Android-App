@@ -47,18 +47,36 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
+/**
+ * Màn hình chính của tính năng dịch giọng nói.
+ *
+ * Chịu trách nhiệm:
+ * - Xin quyền RECORD_AUDIO
+ * - Kết nối UI với TranslateViewModel
+ * - Điều phối các composable con: header, kết quả, nút ghi âm
+ *
+ * @param viewModel ViewModel quản lý logic ghi âm và dịch
+ */
 @Composable
 fun TranslateScreen(
     viewModel: TranslateViewModel = viewModel()
 ) {
     val context = LocalContext.current
+
+    /** Trạng thái quyền ghi âm */
     var hasPermission by remember { mutableStateOf(false) }
-    
+
+    /**
+     * Launcher dùng để request permission RECORD_AUDIO.
+     */
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted -> hasPermission = isGranted }
     )
-    
+
+    /**
+     * Request quyền ghi âm ngay khi composable được khởi tạo.
+     */
     LaunchedEffect(Unit) {
         permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
     }
@@ -70,7 +88,10 @@ fun TranslateScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header / Language Switcher
+        /**
+         * Header hiển thị ngôn ngữ nguồn/đích
+         * và cho phép đổi hướng dịch.
+         */
         LanguageHeader(
             direction = viewModel.direction,
             onSwap = { viewModel.toggleDirection() }
@@ -78,7 +99,10 @@ fun TranslateScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Result Area
+        /**
+         * Khu vực hiển thị kết quả dịch,
+         * trạng thái xử lý hoặc lỗi.
+         */
         ResultArea(
             uiState = viewModel.uiState,
             result = viewModel.result,
@@ -89,19 +113,31 @@ fun TranslateScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Recording Button
+        /**
+         * Nút ghi âm chính của ứng dụng.
+         */
         RecordButton(
             isRecording = viewModel.uiState == UiState.RECORDING,
             hasPermission = hasPermission,
             onStartRecord = { viewModel.startRecording() },
             onStopRecord = { viewModel.stopRecording() },
-            onRequestPermission = { permissionLauncher.launch(Manifest.permission.RECORD_AUDIO) }
+            onRequestPermission = {
+                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }
         )
-        
+
         Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
+/**
+ * Header hiển thị ngôn ngữ nguồn và ngôn ngữ đích.
+ *
+ * Cho phép người dùng đổi chiều dịch bằng nút swap.
+ *
+ * @param direction Hướng dịch hiện tại
+ * @param onSwap Callback khi người dùng đổi chiều dịch
+ */
 @Composable
 fun LanguageHeader(
     direction: TranslationDirection,
@@ -128,7 +164,10 @@ fun LanguageHeader(
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold
         )
-        
+
+        /**
+         * Icon đổi chiều ngôn ngữ.
+         */
         Icon(
             imageVector = Icons.Default.SwapHoriz,
             contentDescription = "Swap languages",
@@ -141,7 +180,7 @@ fun LanguageHeader(
                 )
                 .padding(8.dp)
         )
-        
+
         Text(
             text = targetLang,
             style = MaterialTheme.typography.titleMedium,
@@ -151,6 +190,22 @@ fun LanguageHeader(
     }
 }
 
+/**
+ * Khu vực hiển thị kết quả dịch.
+ *
+ * Phản ứng theo UiState:
+ * - IDLE: hướng dẫn người dùng
+ * - RECORDING: đang nghe
+ * - PROCESSING: loading
+ * - SUCCESS: hiển thị kết quả dịch
+ * - ERROR: hiển thị lỗi
+ *
+ * @param uiState Trạng thái hiện tại của UI
+ * @param result Kết quả dịch
+ * @param direction Hướng dịch
+ * @param errorMessage Thông báo lỗi nếu có
+ * @param onPlayAudio Callback phát audio kết quả
+ */
 @Composable
 fun ResultArea(
     uiState: UiState,
@@ -164,11 +219,12 @@ fun ResultArea(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(400.dp) // Tăng chiều cao để hiển thị nhiều thông tin hơn
+            .height(400.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(Color.White)
             .padding(24.dp),
-        contentAlignment = if (uiState == UiState.PROCESSING) Alignment.Center else Alignment.TopStart
+        contentAlignment = if (uiState == UiState.PROCESSING)
+            Alignment.Center else Alignment.TopStart
     ) {
         when (uiState) {
             UiState.IDLE -> {
@@ -180,44 +236,49 @@ fun ResultArea(
                     )
                 }
             }
+
             UiState.RECORDING -> {
-                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                         Text(
-                             text = "Đang nghe...",
-                             color = MaterialTheme.colorScheme.primary,
-                             fontWeight = FontWeight.Bold,
-                             fontSize = 18.sp
-                         )
-                     }
-                 }
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "Đang nghe...",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                    }
+                }
             }
+
             UiState.PROCESSING -> {
                 CircularProgressIndicator()
             }
+
             UiState.SUCCESS -> {
-                Column(
-                    modifier = Modifier.verticalScroll(scrollState)
-                ) {
-                    // Source text section
+                Column(modifier = Modifier.verticalScroll(scrollState)) {
+
+                    /** Văn bản nguồn */
                     Text(
-                        text = if (direction == TranslationDirection.HMONG_TO_VIET) "H'Mông" else "Tiếng Việt",
+                        text = if (direction == TranslationDirection.HMONG_TO_VIET)
+                            "H'Mông" else "Tiếng Việt",
                         fontSize = 12.sp,
                         color = Color.Gray,
                         fontWeight = FontWeight.Bold
                     )
+
                     Spacer(modifier = Modifier.height(4.dp))
+
                     Text(
                         text = result.sourceText,
                         fontSize = 18.sp,
                         color = Color.Black
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
                     HorizontalDivider()
                     Spacer(modifier = Modifier.height(16.dp))
-                    
-                    // Target text section
+
+                    /** Văn bản đích + nút phát audio (nếu có) */
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -225,21 +286,23 @@ fun ResultArea(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = if (direction == TranslationDirection.HMONG_TO_VIET) "Tiếng Việt" else "H'Mông",
+                                text = if (direction == TranslationDirection.HMONG_TO_VIET)
+                                    "Tiếng Việt" else "H'Mông",
                                 fontSize = 12.sp,
                                 color = Color.Gray,
                                 fontWeight = FontWeight.Bold
                             )
+
                             Spacer(modifier = Modifier.height(4.dp))
+
                             Text(
                                 text = result.targetText,
-                                fontSize = 22.sp, // Target text slightly larger
+                                fontSize = 22.sp,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Medium
                             )
                         }
-                        
-                        // Show audio button if it's Viet -> Hmong and audio is available
+
                         if (direction == TranslationDirection.VIET_TO_HMONG && result.audioFile != null) {
                             IconButton(onClick = onPlayAudio) {
                                 Icon(
@@ -252,18 +315,31 @@ fun ResultArea(
                     }
                 }
             }
+
             UiState.ERROR -> {
-                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                     Text(
-                         text = errorMessage,
-                         color = MaterialTheme.colorScheme.error
-                     )
-                 }
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = errorMessage,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }
 }
 
+/**
+ * Nút ghi âm hình tròn.
+ *
+ * - Chạm để bắt đầu / dừng ghi âm
+ * - Tự động request permission nếu chưa được cấp
+ *
+ * @param isRecording Trạng thái ghi âm hiện tại
+ * @param hasPermission Đã có quyền RECORD_AUDIO hay chưa
+ * @param onStartRecord Callback bắt đầu ghi âm
+ * @param onStopRecord Callback dừng ghi âm
+ * @param onRequestPermission Callback xin quyền ghi âm
+ */
 @Composable
 fun RecordButton(
     isRecording: Boolean,
@@ -272,8 +348,10 @@ fun RecordButton(
     onStopRecord: () -> Unit,
     onRequestPermission: () -> Unit
 ) {
-    val backgroundColor = if (isRecording) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-    
+    val backgroundColor =
+        if (isRecording) MaterialTheme.colorScheme.error
+        else MaterialTheme.colorScheme.primary
+
     Box(
         modifier = Modifier
             .size(80.dp)
@@ -291,11 +369,7 @@ fun RecordButton(
             )
             .clickable {
                 if (hasPermission) {
-                    if (isRecording) {
-                        onStopRecord()
-                    } else {
-                        onStartRecord()
-                    }
+                    if (isRecording) onStopRecord() else onStartRecord()
                 } else {
                     onRequestPermission()
                 }
@@ -309,7 +383,7 @@ fun RecordButton(
             modifier = Modifier.size(40.dp)
         )
     }
-    
+
     if (isRecording) {
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Chạm để dừng", color = Color.Gray)
