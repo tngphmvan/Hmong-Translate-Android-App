@@ -1,4 +1,13 @@
 package com.example.hmong_translate.ui
+/**
+ * Jetpack Compose UI for the voice translation screen.
+ *
+ * This file defines the main translation screen and its UI components,
+ * including language switching, audio recording controls, permission handling,
+ * translation result display, and audio playback interaction.
+ *
+ * The UI reacts to state changes from TranslateViewModel following MVVM architecture.
+ */
 
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
