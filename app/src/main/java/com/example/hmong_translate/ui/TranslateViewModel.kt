@@ -49,6 +49,7 @@ class TranslateViewModel(application: Application) : AndroidViewModel(applicatio
     private var mediaPlayer: MediaPlayer? = null
     
     // UI State
+
     var uiState by mutableStateOf(UiState.IDLE)
         private set
     
@@ -62,6 +63,7 @@ class TranslateViewModel(application: Application) : AndroidViewModel(applicatio
         private set
 
     // Setup Retrofit
+
     private val apiService: ApiService by lazy {
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val client = OkHttpClient.Builder()
@@ -78,7 +80,7 @@ class TranslateViewModel(application: Application) : AndroidViewModel(applicatio
             .build()
             .create(ApiService::class.java)
     }
-
+    // toggle
     fun toggleDirection() {
         direction = if (direction == TranslationDirection.HMONG_TO_VIET) {
             TranslationDirection.VIET_TO_HMONG
@@ -87,13 +89,13 @@ class TranslateViewModel(application: Application) : AndroidViewModel(applicatio
         }
         resetState()
     }
-    
+    //reset
     private fun resetState() {
         uiState = UiState.IDLE
         result = TranslationResult()
         errorMessage = ""
     }
-
+    // function startRecord
     fun startRecording() {
         try {
             resetState()
@@ -104,7 +106,7 @@ class TranslateViewModel(application: Application) : AndroidViewModel(applicatio
             uiState = UiState.ERROR
         }
     }
-
+    // function stopRecord
     fun stopRecording() {
         if (uiState != UiState.RECORDING) return
         
@@ -176,7 +178,7 @@ class TranslateViewModel(application: Application) : AndroidViewModel(applicatio
             null
         }
     }
-
+    //audioResult
     fun playAudioResult() {
         val file = result.audioFile ?: return
         try {
@@ -192,7 +194,7 @@ class TranslateViewModel(application: Application) : AndroidViewModel(applicatio
             // Don't change main UI state to ERROR just for playback failure, maybe show toast
         }
     }
-
+    //clear
     override fun onCleared() {
         super.onCleared()
         mediaPlayer?.release()
