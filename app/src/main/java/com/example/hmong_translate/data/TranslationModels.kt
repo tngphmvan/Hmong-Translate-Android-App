@@ -18,3 +18,4 @@ data class VietToHmongResponse(
     @SerializedName("success") val success: Boolean,
     @SerializedName("message") val message: String?
 )
+//
