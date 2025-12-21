@@ -217,6 +217,7 @@ fun ResultArea(
                     HorizontalDivider()
                     Spacer(modifier = Modifier.height(16.dp))
                     
+
                     // Target text section
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -239,7 +240,9 @@ fun ResultArea(
                             )
                         }
                         
+
                         // Show audio button if it's Viet -> Hmong and audio is available
+                        
                         if (direction == TranslationDirection.VIET_TO_HMONG && result.audioFile != null) {
                             IconButton(onClick = onPlayAudio) {
                                 Icon(
