@@ -12,6 +12,7 @@ package com.example.hmong_translate.ui
  * Designed following MVVM architecture with Coroutines and Jetpack Compose state.
  */
 
+// import framework
 import android.app.Application
 import android.media.MediaPlayer
 import android.util.Base64

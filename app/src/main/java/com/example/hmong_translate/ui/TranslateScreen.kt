@@ -9,6 +9,7 @@ package com.example.hmong_translate.ui
  * The UI reacts to state changes from TranslateViewModel following MVVM architecture.
  */
 
+// import framework
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
