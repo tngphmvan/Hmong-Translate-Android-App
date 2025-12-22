@@ -1,5 +1,5 @@
 package com.example.hmong_translate.ui
-
+// import framework
 import android.app.Application
 import android.media.MediaPlayer
 import android.util.Base64
