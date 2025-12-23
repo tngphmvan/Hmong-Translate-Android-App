@@ -317,9 +317,5 @@ fun RecordButton(
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Chạm để dừng", color = Color.Gray)
     }
-   // if (isRecording) {
-   //     Spacer(modifier = Modifier.height(8.dp))
-   //     Text(text = "Chạm để dừng", color = Color.Gray)
-   // }
     // them chuc nang moi
 }
