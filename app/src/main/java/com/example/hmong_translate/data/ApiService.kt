@@ -7,13 +7,13 @@ import retrofit2.http.Part
 
 interface ApiService {
     @Multipart
-    @POST("api/hmong-to-vietnamese")
+    @POST("api/hmong-to-vietnamese") //Translate Hmong to Vietnamese
     suspend fun translateHmongToViet(
         @Part audio: MultipartBody.Part
     ): HmongToVietResponse
 
     @Multipart
-    @POST("api/vietnamese-to-hmong")
+    @POST("api/vietnamese-to-hmong") //Translate Vietnamese to Hmong
     suspend fun translateVietToHmong(
         @Part audio: MultipartBody.Part
     ): VietToHmongResponse
