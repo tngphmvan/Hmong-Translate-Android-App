@@ -8,7 +8,7 @@
  * @since 1.0.0
  */
 package com.example.hmong_translate
-// import framework
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
