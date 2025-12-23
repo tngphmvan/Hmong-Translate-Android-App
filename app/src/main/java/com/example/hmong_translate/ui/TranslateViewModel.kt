@@ -1,5 +1,18 @@
 package com.example.hmong_translate.ui
+/**
+ * ViewModel that handles voice translation between Hmong and Vietnamese.
+ *
+ * Responsibilities:
+ * - Manage audio recording lifecycle
+ * - Upload recorded audio to backend translation APIs
+ * - Handle bidirectional translation (Hmong ↔ Vietnamese)
+ * - Manage UI state for recording, processing, and result display
+ * - Decode, save, and play back translated audio responses
+ *
+ * Designed following MVVM architecture with Coroutines and Jetpack Compose state.
+ */
 
+// import framework
 import android.app.Application
 import android.media.MediaPlayer
 import android.util.Base64

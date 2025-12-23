@@ -1,4 +1,11 @@
 package com.example.hmong_translate.utils
+/**
+ * Utility class for recording audio from the device microphone.
+ *
+ * This class records raw PCM audio using AudioRecord, converts it into
+ * a WAV file by adding the appropriate header, and stores the result
+ * in the app's cache directory for further processing or upload.
+ */
 
 import android.annotation.SuppressLint
 import android.content.Context

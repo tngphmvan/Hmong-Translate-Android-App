@@ -29,7 +29,7 @@ interface ApiService {
      * @return HmongToVietResponse chứa kết quả dịch và trạng thái xử lý
      */
     @Multipart
-    @POST("api/hmong-to-vietnamese")
+    @POST("api/hmong-to-vietnamese") //Translate Hmong to Vietnamese
     suspend fun translateHmongToViet(
         @Part audio: MultipartBody.Part
     ): HmongToVietResponse
@@ -48,7 +48,7 @@ interface ApiService {
      * @return VietToHmongResponse chứa kết quả dịch và audio Base64 (nếu thành công)
      */
     @Multipart
-    @POST("api/vietnamese-to-hmong")
+    @POST("api/vietnamese-to-hmong") //Translate Vietnamese to Hmong
     suspend fun translateVietToHmong(
         @Part audio: MultipartBody.Part
     ): VietToHmongResponse
